@@ -489,43 +489,289 @@
             color: #666;
         }
 
+        /* Mobile Menu */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .mobile-sidebar {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .mobile-sidebar.active {
+            left: 0;
+        }
+
+        .mobile-sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .mobile-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .main-container {
-                grid-template-columns: 200px 1fr 250px;
+                grid-template-columns: 200px 1fr 280px;
+                gap: 1.5rem;
+            }
+            
+            .header-container {
+                padding: 0 15px;
             }
         }
 
         @media (max-width: 992px) {
             .main-container {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 300px;
+                max-width: 100%;
             }
             
-            .left-sidebar,
-            .right-sidebar {
-                position: static;
+            .left-sidebar {
+                display: none;
             }
             
-            .posts-grid {
-                grid-template-columns: 1fr;
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .top-nav {
+                gap: 1rem;
+            }
+            
+            .search-box {
+                width: 200px;
             }
         }
 
         @media (max-width: 768px) {
+            .header-container {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .top-nav {
+                display: none;
+            }
+            
+            .search-container {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+            
             .search-box {
-                width: 200px;
+                width: 250px;
+            }
+            
+            .main-container {
+                grid-template-columns: 1fr;
+                margin: 1rem auto;
+                padding: 0 10px;
+            }
+            
+            .right-sidebar {
+                order: -1;
+                margin-bottom: 2rem;
+            }
+            
+            .main-content {
+                padding: 1.5rem;
+            }
+            
+            .content-title {
+                font-size: 1.5rem;
+            }
+            
+            .action-buttons {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .action-buttons .btn {
+                flex: 1;
+                min-width: 120px;
+                text-align: center;
             }
             
             .form-row {
                 grid-template-columns: 1fr;
             }
+            
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .post-content {
+                padding: 1rem;
+            }
+            
+            .post-meta {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .post-actions {
+                flex-wrap: wrap;
+            }
+            
+            .widget {
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .search-box {
+                width: 200px;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .content-title {
+                font-size: 1.3rem;
+            }
+            
+            .action-buttons .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .post-form {
+                padding: 1rem;
+            }
+            
+            .editor-toolbar {
+                flex-wrap: wrap;
+            }
+            
+            .editor-btn {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.4rem;
+            }
+            
+            .post-card {
+                margin-bottom: 1rem;
+            }
+            
+            .post-image {
+                height: 150px;
+                font-size: 2rem;
+            }
+            
+            .post-title {
+                font-size: 1.1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .market-data {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .tags-cloud {
+                gap: 0.3rem;
+            }
+            
+            .tag {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.6rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileMenu()"></div>
+    
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="mobile-sidebar-header">
+            <h3 style="color: #2a5298; margin: 0;">Menu</h3>
+            <button class="mobile-close" onclick="toggleMobileMenu()">×</button>
+        </div>
+        
+        <!-- Mobile Navigation Menu -->
+        <div class="sidebar-section">
+            <h3 class="sidebar-title">📊 Danh mục</h3>
+            <ul class="sidebar-menu">
+                <li><a href="#all" class="active">📝 Tất cả bài viết</a></li>
+                <li><a href="#stocks">📈 Chứng khoán</a></li>
+                <li><a href="#analysis">🔍 Phân tích kỹ thuật</a></li>
+                <li><a href="#fundamental">📊 Phân tích cơ bản</a></li>
+                <li><a href="#psychology">🧠 Tâm lý đầu tư</a></li>
+                <li><a href="#portfolio">💼 Quản lý danh mục</a></li>
+                <li><a href="#personal">🚀 Phát triển bản thân</a></li>
+                <li><a href="#news">📰 Tin tức thị trường</a></li>
+            </ul>
+        </div>
+
+        <!-- Mobile Quick Actions -->
+        <div class="sidebar-section">
+            <h3 class="sidebar-title">⚡ Thao tác nhanh</h3>
+            <ul class="sidebar-menu">
+                <li><a href="#create">✍️ Viết bài mới</a></li>
+                <li><a href="#draft">📝 Bài nháp</a></li>
+                <li><a href="#scheduled">⏰ Bài đã lên lịch</a></li>
+                <li><a href="#analytics">📈 Thống kê</a></li>
+            </ul>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="header">
         <div class="header-container">
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
             <a href="#" class="logo">💰 WealthBuilder VN</a>
             
             <nav>
@@ -806,3 +1052,214 @@ Gợi ý cấu trúc:
                 </div>
                 <div class="activity-item">
                     <div class="activity-icon">👁️</div>
+                    <div class="activity-content">
+                        <div class="activity-title">Bài viết được xem 156 lần</div>
+                        <div class="activity-time">15 phút trước</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon">📝</div>
+                    <div class="activity-content">
+                        <div class="activity-title">Bài viết mới được đăng</div>
+                        <div class="activity-time">2 giờ trước</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon">⭐</div>
+                    <div class="activity-content">
+                        <div class="activity-title">5 lượt thích mới</div>
+                        <div class="activity-time">3 giờ trước</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            <div class="widget">
+                <h3 class="widget-title">🌐 Kết nối xã hội</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                    <a href="#" class="btn btn-primary" style="text-align: center;">
+                        📘 Facebook Page (1.2k follows)
+                    </a>
+                    <a href="#" class="btn btn-success" style="text-align: center;">
+                        📹 YouTube Channel (890 subs)
+                    </a>
+                    <a href="#" class="btn btn-secondary" style="text-align: center;">
+                        💼 LinkedIn (567 connects)
+                    </a>
+                    <a href="#" class="btn btn-secondary" style="text-align: center;">
+                        📧 Newsletter (2.1k subscribers)
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tools & Resources -->
+            <div class="widget">
+                <h3 class="widget-title">🛠️ Công cụ hữu ích</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#">📊 Screener cổ phiếu</a></li>
+                    <li><a href="#">📈 Biểu đồ kỹ thuật</a></li>
+                    <li><a href="#">💰 Tính toán P/E, P/B</a></li>
+                    <li><a href="#">📝 Template phân tích</a></li>
+                    <li><a href="#">🎓 Khóa học online</a></li>
+                    <li><a href="#">📚 Sách khuyên đọc</a></li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Store posts in memory
+        let posts = [];
+        let drafts = [];
+
+        // Toggle post form visibility
+        function togglePostForm() {
+            const form = document.getElementById('postForm');
+            const isVisible = form.style.display === 'block';
+            form.style.display = isVisible ? 'none' : 'block';
+            if (!isVisible) {
+                document.getElementById('postTitle').focus();
+            }
+        }
+
+        // Insert formatting for rich text editor
+        function insertFormat(before, after) {
+            const textarea = document.getElementById('postContent');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            const replacement = before + selectedText + after;
+            
+            textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+            textarea.focus();
+            textarea.setSelectionRange(start + before.length, start + before.length + selectedText.length);
+        }
+
+        // Create new post
+        function createPost() {
+            const title = document.getElementById('postTitle').value;
+            const category = document.getElementById('postCategory').value;
+            const tags = document.getElementById('postTags').value;
+            const status = document.getElementById('postStatus').value;
+            const summary = document.getElementById('postSummary').value;
+            const content = document.getElementById('postContent').value;
+
+            if (!title || !summary || !content) {
+                alert('⚠️ Vui lòng điền đầy đủ thông tin bắt buộc!');
+                return;
+            }
+
+            const newPost = {
+                id: Date.now(),
+                title: title,
+                category: category,
+                tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+                status: status,
+                summary: summary,
+                content: content,
+                author: 'Admin',
+                date: new Date().toLocaleDateString('vi-VN'),
+                views: Math.floor(Math.random() * 1000) + 100,
+                comments: Math.floor(Math.random() * 20) + 1,
+                likes: Math.floor(Math.random() * 50) + 5
+            };
+
+            if (status === 'draft') {
+                drafts.unshift(newPost);
+                alert('💾 Bài viết đã được lưu vào nháp!');
+            } else {
+                posts.unshift(newPost);
+                displayPosts();
+                alert('🚀 Bài viết đã được đăng thành công!');
+            }
+            
+            // Clear form
+            clearPostForm();
+            togglePostForm();
+            
+            // Update stats
+            updateStats();
+        }
+
+        // Save as draft
+        function saveDraft() {
+            const title = document.getElementById('postTitle').value;
+            const category = document.getElementById('postCategory').value;
+            const summary = document.getElementById('postSummary').value;
+            const content = document.getElementById('postContent').value;
+
+            if (!title && !summary && !content) {
+                alert('⚠️ Không có nội dung để lưu!');
+                return;
+            }
+
+            const draft = {
+                id: Date.now(),
+                title: title || 'Bài viết chưa có tiêu đề',
+                category: category,
+                summary: summary,
+                content: content,
+                date: new Date().toLocaleDateString('vi-VN'),
+                status: 'draft'
+            };
+
+            drafts.unshift(draft);
+            alert('💾 Đã lưu bài viết vào nháp!');
+            clearPostForm();
+        }
+
+        // Clear post form
+        function clearPostForm() {
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postTags').value = '';
+            document.getElementById('postSummary').value = '';
+            document.getElementById('postContent').value = '';
+        }
+
+        // Display posts
+        function displayPosts() {
+            const container = document.getElementById('postsContainer');
+            let postsHTML = '';
+            
+            posts.forEach(post => {
+                const categoryDisplay = getCategoryDisplay(post.category);
+                const categoryIcon = getCategoryIcon(post.category);
+                postsHTML += `
+                    <article class="post-card">
+                        <div class="post-image">${categoryIcon}</div>
+                        <div class="post-content">
+                            <span class="post-category">${categoryDisplay}</span>
+                            <h3 class="post-title">${post.title}</h3>
+                            <div class="post-meta">
+                                <span>👤 ${post.author}</span>
+                                <span>📅 ${post.date}</span>
+                                <span>💬 ${post.comments} bình luận</span>
+                                <span>👁️ ${post.views} lượt xem</span>
+                            </div>
+                            <p class="post-excerpt">${post.summary}</p>
+                            ${post.tags.length > 0 ? `
+                                <div style="margin: 1rem 0;">
+                                    ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join(' ')}
+                                </div>
+                            ` : ''}
+                            <div class="post-actions">
+                                <a href="#" class="btn btn-primary">👁️ Xem</a>
+                                <a href="#" class="btn btn-secondary">✏️ Sửa</a>
+                                <a href="#" class="btn btn-secondary">📊 Thống kê</a>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            });
+            
+            // Keep existing sample posts and add new ones
+            const existingSamples = container.innerHTML;
+            container.innerHTML = postsHTML + existingSamples;
+        }
+
+        // Get category display name
+        function getCategoryDisplay(category) {
+            const categories = {
+                'chung-khoan': 'Chứng khoán',
+                'phan-tich-ky-thuat': 'Phân tích kỹ thuật',
+                'phan-tich-co-ban': 'Phân tích cơ bản',
