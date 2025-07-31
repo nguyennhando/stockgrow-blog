@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockGrow - Blog Chứng Khoán & Phát Triển Bản Thân</title>
+    <title>WealthBuilder VN - Blog Chứng Khoán & Phát Triển Bản Thân</title>
     <style>
         * {
             margin: 0;
@@ -15,144 +15,241 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+            background: #f8f9fa;
         }
 
         /* Header */
-        header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
             padding: 1rem 0;
-            position: fixed;
-            width: 100%;
+            position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        nav {
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .logo {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: bold;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            text-decoration: none;
+            color: white;
         }
 
-        .nav-links {
+        .top-nav {
             display: flex;
             list-style: none;
             gap: 2rem;
         }
 
-        .nav-links a {
+        .top-nav a {
+            color: white;
             text-decoration: none;
-            color: #333;
             font-weight: 500;
-            transition: color 0.3s ease;
-            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s ease;
         }
 
-        .nav-links a:hover {
-            color: #667eea;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 0;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        /* Main Content */
-        main {
-            margin-top: 100px;
-            padding: 2rem 0;
-        }
-
-        /* Hero Section */
-        .hero {
-            text-align: center;
-            padding: 4rem 0;
-            color: white;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 1rem 2rem;
+        .top-nav a:hover {
             background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Search Bar */
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-box {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 25px;
+            width: 300px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .search-btn {
+            padding: 0.5rem 1rem;
+            background: #28a745;
             color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
             font-weight: 600;
         }
 
-        .cta-button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        /* Main Layout */
+        .main-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 2rem;
         }
 
-        /* Content Sections */
-        .content-section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            margin: 2rem 0;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        /* Left Sidebar */
+        .left-sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
         }
 
-        .section-title {
-            font-size: 2rem;
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2a5298;
             margin-bottom: 1rem;
-            color: #333;
-            text-align: center;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            text-decoration: none;
+            color: #666;
+            padding: 0.5rem;
+            display: block;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: #2a5298;
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-height: 800px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .content-title {
+            font-size: 2rem;
+            color: #2a5298;
+            margin-bottom: 0.5rem;
+        }
+
+        .breadcrumb {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #2a5298;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .widget {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .widget-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2a5298;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
         }
 
         /* Post Creation Form */
         .post-form {
             display: none;
-            background: white;
+            background: #f8f9fa;
             padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            border: 2px dashed #dee2e6;
+            margin-bottom: 2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-group {
@@ -163,7 +260,7 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 600;
-            color: #555;
+            color: #333;
         }
 
         .form-group input,
@@ -171,8 +268,8 @@
         .form-group textarea {
             width: 100%;
             padding: 0.8rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
             font-size: 1rem;
             transition: border-color 0.3s ease;
         }
@@ -181,7 +278,8 @@
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 2px rgba(42, 82, 152, 0.2);
         }
 
         .form-group textarea {
@@ -189,55 +287,68 @@
             resize: vertical;
         }
 
-        .btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 0.8rem 2rem;
-            border: none;
-            border-radius: 25px;
+        .editor-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+
+        .editor-btn {
+            padding: 0.3rem 0.6rem;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            font-size: 0.8rem;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        .editor-btn:hover {
+            background: #f8f9fa;
         }
 
-        .btn-secondary {
-            background: #6c757d;
-            margin-left: 1rem;
-        }
-
-        /* Posts Display */
+        /* Posts Grid */
         .posts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 2rem;
-            margin-top: 2rem;
         }
 
         .post-card {
             background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
         }
 
         .post-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .post-image {
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .post-content {
+            padding: 1.5rem;
         }
 
         .post-category {
             display: inline-block;
-            padding: 0.3rem 1rem;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            padding: 0.3rem 0.8rem;
+            background: #2a5298;
             color: white;
-            border-radius: 20px;
+            border-radius: 15px;
             font-size: 0.8rem;
             font-weight: 600;
             margin-bottom: 1rem;
@@ -249,25 +360,150 @@
             color: #333;
         }
 
-        .post-date {
-            color: #888;
+        .post-meta {
+            display: flex;
+            gap: 1rem;
+            color: #666;
             font-size: 0.9rem;
             margin-bottom: 1rem;
         }
 
-        .post-content {
+        .post-excerpt {
             color: #555;
             line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .post-actions .btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        /* Market Data Widget */
+        .market-data {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .market-item {
+            text-align: center;
+        }
+
+        .market-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .market-change {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Quick Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2a5298;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        /* Tags Cloud */
+        .tags-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            padding: 0.3rem 0.8rem;
+            background: #e9ecef;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background: #2a5298;
+            color: white;
+        }
+
+        /* Recent Activity */
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            background: #2a5298;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #666;
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 200px 1fr 250px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .main-container {
+                grid-template-columns: 1fr;
             }
             
-            .hero h1 {
-                font-size: 2.5rem;
+            .left-sidebar,
+            .right-sidebar {
+                position: static;
             }
             
             .posts-grid {
@@ -275,230 +511,298 @@
             }
         }
 
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
+        @media (max-width: 768px) {
+            .search-box {
+                width: 200px;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            
+            .form-row {
+                grid-template-columns: 1fr;
             }
-        }
-
-        .fade-in {
-            animation: fadeInUp 0.6s ease-out;
         }
     </style>
 </head>
 <body>
-    <header>
-        <nav class="container">
-            <div class="logo">StockGrow</div>
-            <ul class="nav-links">
-                <li><a href="#home">Trang chủ</a></li>
-                <li><a href="#posts">Bài viết</a></li>
-                <li><a href="#create">Tạo bài</a></li>
-                <li><a href="#about">Giới thiệu</a></li>
-            </ul>
-        </nav>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="#" class="logo">💰 WealthBuilder VN</a>
+            
+            <nav>
+                <ul class="top-nav">
+                    <li><a href="#home">Trang chủ</a></li>
+                    <li><a href="#posts">Bài viết</a></li>
+                    <li><a href="#analysis">Phân tích</a></li>
+                    <li><a href="#portfolio">Portfolio</a></li>
+                    <li><a href="#education">Học tập</a></li>
+                </ul>
+            </nav>
+            
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Tìm kiếm bài viết, cổ phiếu...">
+                <button class="search-btn">Tìm</button>
+            </div>
+        </div>
     </header>
 
-    <main>
-        <section id="home" class="hero">
-            <div class="container">
-                <h1 class="fade-in">StockGrow Blog</h1>
-                <p class="fade-in">Chia sẻ kiến thức đầu tư chứng khoán và phát triển bản thân</p>
-                <a href="#create" class="cta-button fade-in">Bắt đầu viết bài</a>
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <aside class="left-sidebar">
+            <!-- Navigation Menu -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">📊 Danh mục</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#all" class="active">📝 Tất cả bài viết</a></li>
+                    <li><a href="#stocks">📈 Chứng khoán</a></li>
+                    <li><a href="#analysis">🔍 Phân tích kỹ thuật</a></li>
+                    <li><a href="#fundamental">📊 Phân tích cơ bản</a></li>
+                    <li><a href="#psychology">🧠 Tâm lý đầu tư</a></li>
+                    <li><a href="#portfolio">💼 Quản lý danh mục</a></li>
+                    <li><a href="#personal">🚀 Phát triển bản thân</a></li>
+                    <li><a href="#news">📰 Tin tức thị trường</a></li>
+                </ul>
             </div>
-        </section>
 
-        <div class="container">
-            <!-- Create Post Section -->
-            <section id="create" class="content-section">
-                <h2 class="section-title">Tạo bài viết mới</h2>
-                <button class="btn" onclick="togglePostForm()">+ Viết bài mới</button>
+            <!-- Quick Actions -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">⚡ Thao tác nhanh</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#create">✍️ Viết bài mới</a></li>
+                    <li><a href="#draft">📝 Bài nháp</a></li>
+                    <li><a href="#scheduled">⏰ Bài đã lên lịch</a></li>
+                    <li><a href="#analytics">📈 Thống kê</a></li>
+                </ul>
+            </div>
+
+            <!-- Archive -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">📅 Lưu trữ</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#">Tháng 7/2025 (12)</a></li>
+                    <li><a href="#">Tháng 6/2025 (8)</a></li>
+                    <li><a href="#">Tháng 5/2025 (15)</a></li>
+                    <li><a href="#">Tháng 4/2025 (6)</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <div>
+                    <h1 class="content-title">Dashboard - Quản lý Blog</h1>
+                    <div class="breadcrumb">Trang chủ / Dashboard / Quản lý bài viết</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="togglePostForm()">✍️ Viết bài mới</button>
+                <button class="btn btn-success">📊 Import dữ liệu</button>
+                <button class="btn btn-secondary">🔄 Đồng bộ</button>
+                <button class="btn btn-secondary">⚙️ Cài đặt</button>
+            </div>
+
+            <!-- Post Creation Form -->
+            <div id="postForm" class="post-form">
+                <h3 style="margin-bottom: 1.5rem; color: #2a5298;">📝 Tạo bài viết mới</h3>
                 
-                <div id="postForm" class="post-form">
+                <div class="form-row">
                     <div class="form-group">
-                        <label for="postTitle">Tiêu đề bài viết:</label>
-                        <input type="text" id="postTitle" placeholder="Nhập tiêu đề bài viết...">
+                        <label for="postTitle">📌 Tiêu đề bài viết:</label>
+                        <input type="text" id="postTitle" placeholder="Nhập tiêu đề hấp dẫn...">
                     </div>
                     
                     <div class="form-group">
-                        <label for="postCategory">Danh mục:</label>
+                        <label for="postCategory">🏷️ Danh mục:</label>
                         <select id="postCategory">
-                            <option value="chung-khoan">Chứng khoán</option>
-                            <option value="phat-trien-ban-than">Phát triển bản thân</option>
-                            <option value="dau-tu">Đầu tư</option>
-                            <option value="tai-chinh">Tài chính cá nhân</option>
-                            <option value="kinh-nghiem">Kinh nghiệm</option>
+                            <option value="chung-khoan">📈 Chứng khoán</option>
+                            <option value="phan-tich-ky-thuat">🔍 Phân tích kỹ thuật</option>
+                            <option value="phan-tich-co-ban">📊 Phân tích cơ bản</option>
+                            <option value="tam-ly-dau-tu">🧠 Tâm lý đầu tư</option>
+                            <option value="quan-ly-danh-muc">💼 Quản lý danh mục</option>
+                            <option value="phat-trien-ban-than">🚀 Phát triển bản thân</option>
+                            <option value="tin-tuc">📰 Tin tức thị trường</option>
                         </select>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="postSummary">Tóm tắt:</label>
-                        <textarea id="postSummary" placeholder="Viết tóm tắt ngắn về bài viết..."></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="postContent">Nội dung:</label>
-                        <textarea id="postContent" style="height: 200px;" placeholder="Viết nội dung chi tiết bài viết..."></textarea>
-                    </div>
-                    
-                    <button class="btn" onclick="createPost()">Đăng bài</button>
-                    <button class="btn btn-secondary" onclick="togglePostForm()">Hủy</button>
                 </div>
-            </section>
 
-            <!-- Posts Display Section -->
-            <section id="posts" class="content-section">
-                <h2 class="section-title">Bài viết mới nhất</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="postTags">🏷️ Tags (cách nhau bằng dấu phẩy):</label>
+                        <input type="text" id="postTags" placeholder="VD: VN-Index, phân tích, đầu tư dài hạn">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="postStatus">📋 Trạng thái:</label>
+                        <select id="postStatus">
+                            <option value="published">🌐 Xuất bản ngay</option>
+                            <option value="draft">📝 Lưu nháp</option>
+                            <option value="scheduled">⏰ Lên lịch đăng</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="postSummary">📋 Tóm tắt bài viết:</label>
+                    <textarea id="postSummary" placeholder="Viết tóm tắt ngắn gọn về nội dung bài viết (hiển thị trên thẻ preview)..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="postContent">📝 Nội dung chi tiết:</label>
+                    <div class="editor-toolbar">
+                        <button class="editor-btn" onclick="insertFormat('**', '**')"><strong>B</strong></button>
+                        <button class="editor-btn" onclick="insertFormat('*', '*')"><em>I</em></button>
+                        <button class="editor-btn" onclick="insertFormat('`', '`')">Code</button>
+                        <button class="editor-btn" onclick="insertFormat('\n### ', '')">H3</button>
+                        <button class="editor-btn" onclick="insertFormat('\n- ', '')">List</button>
+                        <button class="editor-btn" onclick="insertFormat('[', '](url)')">Link</button>
+                    </div>
+                    <textarea id="postContent" style="height: 300px;" placeholder="Viết nội dung chi tiết bài viết... 
+
+Gợi ý cấu trúc:
+### 1. Giới thiệu vấn đề
+### 2. Phân tích chi tiết  
+### 3. Ví dụ thực tế
+### 4. Kết luận và khuyến nghị"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button class="btn btn-primary" onclick="createPost()">🚀 Đăng bài</button>
+                    <button class="btn btn-secondary" onclick="saveDraft()">💾 Lưu nháp</button>
+                    <button class="btn btn-secondary" onclick="togglePostForm()">❌ Hủy</button>
+                </div>
+            </div>
+
+            <!-- Posts Display -->
+            <div id="postsSection">
+                <h2 style="margin-bottom: 1.5rem; color: #2a5298;">📚 Bài viết gần đây</h2>
                 <div id="postsContainer" class="posts-grid">
-                    <!-- Sample posts -->
-                    <div class="post-card fade-in">
-                        <div class="post-category">Chứng khoán</div>
-                        <h3 class="post-title">5 Nguyên tắc đầu tư chứng khoán cho người mới bắt đầu</h3>
-                        <div class="post-date">31/07/2025</div>
+                    <!-- Sample Posts -->
+                    <article class="post-card">
+                        <div class="post-image">📈</div>
                         <div class="post-content">
-                            Đầu tư chứng khoán không chỉ là may rủi mà cần có chiến lược rõ ràng. Hãy cùng tìm hiểu 5 nguyên tắc cơ bản giúp bạn đầu tư hiệu quả và an toàn...
+                            <span class="post-category">Chứng khoán</span>
+                            <h3 class="post-title">5 Nguyên tắc đầu tư chứng khoán cho người mới bắt đầu</h3>
+                            <div class="post-meta">
+                                <span>👤 Admin</span>
+                                <span>📅 31/07/2025</span>
+                                <span>💬 15 bình luận</span>
+                                <span>👁️ 1,234 lượt xem</span>
+                            </div>
+                            <p class="post-excerpt">
+                                Đầu tư chứng khoán không chỉ là may rủi mà cần có chiến lược rõ ràng. Hãy cùng tìm hiểu 5 nguyên tắc cơ bản giúp bạn đầu tư hiệu quả và an toàn trong thị trường...
+                            </p>
+                            <div class="post-actions">
+                                <a href="#" class="btn btn-primary">👁️ Xem</a>
+                                <a href="#" class="btn btn-secondary">✏️ Sửa</a>
+                                <a href="#" class="btn btn-secondary">📊 Thống kê</a>
+                            </div>
                         </div>
+                    </article>
+
+                    <article class="post-card">
+                        <div class="post-image">🧠</div>
+                        <div class="post-content">
+                            <span class="post-category">Phát triển bản thân</span>
+                            <h3 class="post-title">Xây dựng mindset của một nhà đầu tư thành công</h3>
+                            <div class="post-meta">
+                                <span>👤 Admin</span>
+                                <span>📅 30/07/2025</span>
+                                <span>💬 8 bình luận</span>
+                                <span>👁️ 856 lượt xem</span>
+                            </div>
+                            <p class="post-excerpt">
+                                Tư duy đúng đắn là chìa khóa thành công trong đầu tư. Bài viết này sẽ chia sẻ cách xây dựng tư duy tích cực, kiên định và khoa học trước những biến động của thị trường...
+                            </p>
+                            <div class="post-actions">
+                                <a href="#" class="btn btn-primary">👁️ Xem</a>
+                                <a href="#" class="btn btn-secondary">✏️ Sửa</a>
+                                <a href="#" class="btn btn-secondary">📊 Thống kê</a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <!-- Market Data Widget -->
+            <div class="widget">
+                <h3 class="widget-title">📊 Thông tin thị trường</h3>
+                <div class="market-data">
+                    <div class="market-item">
+                        <div class="market-value">1,287.45</div>
+                        <div class="market-change">VN-Index (+0.85%)</div>
                     </div>
-                    
-                    <div class="post-card fade-in">
-                        <div class="post-category">Phát triển bản thân</div>
-                        <h3 class="post-title">Xây dựng mindset của một nhà đầu tư thành công</h3>
-                        <div class="post-date">30/07/2025</div>
-                        <div class="post-content">
-                            Tư duy đúng đắn là chìa khóa thành công trong đầu tư. Bài viết này sẽ chia sẻ cách xây dựng tư duy tích cực và kiên định trước thị trường...
-                        </div>
+                    <div class="market-item">
+                        <div class="market-value">134.72</div>
+                        <div class="market-change">HNX-Index (+0.42%)</div>
                     </div>
                 </div>
-            </section>
-
-            <!-- About Section -->
-            <section id="about" class="content-section">
-                <h2 class="section-title">Giới thiệu</h2>
-                <p style="text-align: center; font-size: 1.1rem; color: #555;">
-                    StockGrow là nền tảng chia sẻ kiến thức về đầu tư chứng khoán và phát triển bản thân. 
-                    Chúng tôi tin rằng việc học hỏi và chia sẻ kinh nghiệm sẽ giúp mọi người đạt được tự do tài chính 
-                    và phát triển toàn diện về mặt cá nhân.
-                </p>
-            </section>
-        </div>
-    </main>
-
-    <script>
-        // Store posts in memory
-        let posts = [];
-
-        // Toggle post form visibility
-        function togglePostForm() {
-            const form = document.getElementById('postForm');
-            form.style.display = form.style.display === 'none' || form.style.display === '' ? 'block' : 'none';
-        }
-
-        // Create new post
-        function createPost() {
-            const title = document.getElementById('postTitle').value;
-            const category = document.getElementById('postCategory').value;
-            const summary = document.getElementById('postSummary').value;
-            const content = document.getElementById('postContent').value;
-
-            if (!title || !summary || !content) {
-                alert('Vui lòng điền đầy đủ thông tin!');
-                return;
-            }
-
-            const newPost = {
-                id: Date.now(),
-                title: title,
-                category: category,
-                summary: summary,
-                content: content,
-                date: new Date().toLocaleDateString('vi-VN')
-            };
-
-            posts.unshift(newPost);
-            displayPosts();
-            
-            // Clear form
-            document.getElementById('postTitle').value = '';
-            document.getElementById('postSummary').value = '';
-            document.getElementById('postContent').value = '';
-            
-            // Hide form
-            togglePostForm();
-            
-            alert('Bài viết đã được đăng thành công!');
-        }
-
-        // Display posts
-        function displayPosts() {
-            const container = document.getElementById('postsContainer');
-            const existingPosts = container.innerHTML;
-            
-            let postsHTML = '';
-            posts.forEach(post => {
-                const categoryDisplay = getCategoryDisplay(post.category);
-                postsHTML += `
-                    <div class="post-card fade-in">
-                        <div class="post-category">${categoryDisplay}</div>
-                        <h3 class="post-title">${post.title}</h3>
-                        <div class="post-date">${post.date}</div>
-                        <div class="post-content">${post.summary}</div>
+                <div class="market-data">
+                    <div class="market-item">
+                        <div class="market-value">24,850</div>
+                        <div class="market-change">USD/VND</div>
                     </div>
-                `;
-            });
-            
-            container.innerHTML = postsHTML + existingPosts;
-        }
+                    <div class="market-item">
+                        <div class="market-value">2,385</div>
+                        <div class="market-change">Gold (USD/oz)</div>
+                    </div>
+                </div>
+            </div>
 
-        // Get category display name
-        function getCategoryDisplay(category) {
-            const categories = {
-                'chung-khoan': 'Chứng khoán',
-                'phat-trien-ban-than': 'Phát triển bản thân',
-                'dau-tu': 'Đầu tư',
-                'tai-chinh': 'Tài chính cá nhân',
-                'kinh-nghiem': 'Kinh nghiệm'
-            };
-            return categories[category] || category;
-        }
+            <!-- Quick Stats -->
+            <div class="widget">
+                <h3 class="widget-title">📈 Thống kê Blog</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">47</div>
+                        <div class="stat-label">Tổng bài viết</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">12,847</div>
+                        <div class="stat-label">Lượt xem</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">234</div>
+                        <div class="stat-label">Bình luận</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">891</div>
+                        <div class="stat-label">Followers</div>
+                    </div>
+                </div>
+            </div>
 
-        // Smooth scrolling for navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
+            <!-- Popular Tags -->
+            <div class="widget">
+                <h3 class="widget-title">🏷️ Tags phổ biến</h3>
+                <div class="tags-cloud">
+                    <a href="#" class="tag">VN-Index</a>
+                    <a href="#" class="tag">Phân tích</a>
+                    <a href="#" class="tag">Đầu tư dài hạn</a>
+                    <a href="#" class="tag">Cổ phiếu ngân hàng</a>
+                    <a href="#" class="tag">Tâm lý thị trường</a>
+                    <a href="#" class="tag">P/E ratio</a>
+                    <a href="#" class="tag">Swing trading</a>
+                    <a href="#" class="tag">Risk management</a>
+                    <a href="#" class="tag">Portfolio</a>
+                    <a href="#" class="tag">Mindset</a>
+                </div>
+            </div>
 
-        // Add fade-in animation to elements when they come into view
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('fade-in');
-                }
-            });
-        }, observerOptions);
-
-        // Observe all post cards
-        document.querySelectorAll('.post-card').forEach(card => {
-            observer.observe(card);
-        });
-    </script>
-</body>
-</html>
+            <!-- Recent Activity -->
+            <div class="widget">
+                <h3 class="widget-title">🔔 Hoạt động gần đây</h3>
+                <div class="activity-item">
+                    <div class="activity-icon">💬</div>
+                    <div class="activity-content">
+                        <div class="activity-title">3 bình luận mới</div>
+                        <div class="activity-time">5 phút trước</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon">👁️</div>
