@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore.js"></script>
+  <script src="../firebase.js"></script>
+</head>
+<body>
+  <h2>Admin Dashboard</h2>
+  <button onclick="logout()">Đăng xuất</button>
+  <h3>Viết bài mới</h3>
+  <input type="text" id="title" placeholder="Tiêu đề">
+  <textarea id="content" placeholder="Nội dung bài viết"></textarea>
+  <button onclick="savePost()">Lưu bài</button>
+
+  <script>
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html";
+      }
+    });
+
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    }
+
+    const db = firebase.firestore();
+    function savePost() {
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
+      db.collection("posts").add({
+        title: title,
+        content: content,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        alert("Đã lưu bài viết!");
+      }).catch(err => alert("Lỗi: " + err.message));
+    }
+  </script>
+</body>
+</html>
