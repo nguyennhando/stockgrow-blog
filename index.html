@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WealthBuilder VN - Blog Chứng Khoán & Phát Triển Bản Thân</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -89,6 +95,62 @@
             font-weight: 600;
         }
 
+        /* Mobile Menu */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .mobile-sidebar {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .mobile-sidebar.active {
+            left: 0;
+        }
+
+        .mobile-sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .mobile-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
         /* Main Layout */
         .main-container {
             max-width: 1400px;
@@ -138,6 +200,7 @@
             display: block;
             border-radius: 5px;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .sidebar-menu a:hover,
@@ -157,7 +220,7 @@
 
         .content-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
             padding-bottom: 1rem;
@@ -207,9 +270,62 @@
             color: white;
         }
 
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2a5298;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
         }
 
         /* Right Sidebar */
@@ -358,6 +474,11 @@
             font-size: 1.3rem;
             margin-bottom: 0.5rem;
             color: #333;
+            cursor: pointer;
+        }
+
+        .post-title:hover {
+            color: #2a5298;
         }
 
         .post-meta {
@@ -384,29 +505,75 @@
             font-size: 0.8rem;
         }
 
-        /* Market Data Widget */
-        .market-data {
-            display: flex;
-            justify-content: space-between;
+        /* Post Detail View */
+        .post-detail {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .post-detail.active {
+            display: block;
+        }
+
+        .post-detail-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .post-detail-title {
+            font-size: 2.5rem;
+            color: #2a5298;
             margin-bottom: 1rem;
         }
 
-        .market-item {
-            text-align: center;
-        }
-
-        .market-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #28a745;
-        }
-
-        .market-change {
-            font-size: 0.8rem;
+        .post-detail-meta {
             color: #666;
+            font-size: 1rem;
         }
 
-        /* Quick Stats */
+        .post-detail-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .post-detail-content h3 {
+            color: #2a5298;
+            margin: 2rem 0 1rem;
+            font-size: 1.5rem;
+        }
+
+        .post-detail-content p {
+            margin-bottom: 1rem;
+        }
+
+        /* Tags */
+        .tags-container {
+            margin: 1rem 0;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: #e9ecef;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background: #2a5298;
+            color: white;
+        }
+
+        /* Stats */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -430,119 +597,6 @@
             font-size: 0.8rem;
             color: #666;
             margin-top: 0.3rem;
-        }
-
-        /* Tags Cloud */
-        .tags-cloud {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .tag {
-            padding: 0.3rem 0.8rem;
-            background: #e9ecef;
-            color: #495057;
-            text-decoration: none;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
-        }
-
-        .tag:hover {
-            background: #2a5298;
-            color: white;
-        }
-
-        /* Recent Activity */
-        .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.8rem 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .activity-icon {
-            width: 40px;
-            height: 40px;
-            background: #2a5298;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-
-        .activity-content {
-            flex: 1;
-        }
-
-        .activity-title {
-            font-weight: 600;
-            margin-bottom: 0.2rem;
-        }
-
-        .activity-time {
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        /* Mobile Menu */
-        .mobile-menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .mobile-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-        }
-
-        .mobile-sidebar {
-            position: fixed;
-            top: 0;
-            left: -100%;
-            width: 80%;
-            max-width: 300px;
-            height: 100%;
-            background: white;
-            z-index: 1000;
-            transition: left 0.3s ease;
-            overflow-y: auto;
-            padding: 1rem;
-        }
-
-        .mobile-sidebar.active {
-            left: 0;
-        }
-
-        .mobile-sidebar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e9ecef;
-        }
-
-        .mobile-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
         }
 
         /* Responsive */
@@ -710,22 +764,12 @@
                 font-size: 1.1rem;
             }
             
+            .post-detail-title {
+                font-size: 1.8rem;
+            }
+            
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
-            }
-            
-            .market-data {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .tags-cloud {
-                gap: 0.3rem;
-            }
-            
-            .tag {
-                font-size: 0.7rem;
-                padding: 0.2rem 0.6rem;
             }
         }
     </style>
@@ -745,14 +789,14 @@
         <div class="sidebar-section">
             <h3 class="sidebar-title">📊 Danh mục</h3>
             <ul class="sidebar-menu">
-                <li><a href="#all" class="active">📝 Tất cả bài viết</a></li>
-                <li><a href="#stocks">📈 Chứng khoán</a></li>
-                <li><a href="#analysis">🔍 Phân tích kỹ thuật</a></li>
-                <li><a href="#fundamental">📊 Phân tích cơ bản</a></li>
-                <li><a href="#psychology">🧠 Tâm lý đầu tư</a></li>
-                <li><a href="#portfolio">💼 Quản lý danh mục</a></li>
-                <li><a href="#personal">🚀 Phát triển bản thân</a></li>
-                <li><a href="#news">📰 Tin tức thị trường</a></li>
+                <li><a onclick="showAllPosts()" class="active">📝 Tất cả bài viết</a></li>
+                <li><a onclick="filterByCategory('chung-khoan')">📈 Chứng khoán</a></li>
+                <li><a onclick="filterByCategory('phan-tich-ky-thuat')">🔍 Phân tích kỹ thuật</a></li>
+                <li><a onclick="filterByCategory('phan-tich-co-ban')">📊 Phân tích cơ bản</a></li>
+                <li><a onclick="filterByCategory('tam-ly-dau-tu')">🧠 Tâm lý đầu tư</a></li>
+                <li><a onclick="filterByCategory('quan-ly-danh-muc')">💼 Quản lý danh mục</a></li>
+                <li><a onclick="filterByCategory('phat-trien-ban-than')">🚀 Phát triển bản thân</a></li>
+                <li><a onclick="filterByCategory('tin-tuc')">📰 Tin tức thị trường</a></li>
             </ul>
         </div>
 
@@ -760,10 +804,9 @@
         <div class="sidebar-section">
             <h3 class="sidebar-title">⚡ Thao tác nhanh</h3>
             <ul class="sidebar-menu">
-                <li><a href="#create">✍️ Viết bài mới</a></li>
-                <li><a href="#draft">📝 Bài nháp</a></li>
-                <li><a href="#scheduled">⏰ Bài đã lên lịch</a></li>
-                <li><a href="#analytics">📈 Thống kê</a></li>
+                <li><a onclick="togglePostForm()">✍️ Viết bài mới</a></li>
+                <li><a onclick="showDrafts()">📝 Bài nháp</a></li>
+                <li><a onclick="showStats()">📈 Thống kê</a></li>
             </ul>
         </div>
     </div>
@@ -772,24 +815,30 @@
     <header class="header">
         <div class="header-container">
             <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
-            <a href="#" class="logo">💰 WealthBuilder VN</a>
+            <a href="#" class="logo" onclick="showDashboard()">💰 WealthBuilder VN</a>
             
             <nav>
                 <ul class="top-nav">
-                    <li><a href="#home">Trang chủ</a></li>
-                    <li><a href="#posts">Bài viết</a></li>
-                    <li><a href="#analysis">Phân tích</a></li>
-                    <li><a href="#portfolio">Portfolio</a></li>
-                    <li><a href="#education">Học tập</a></li>
+                    <li><a href="#" onclick="showDashboard()">Trang chủ</a></li>
+                    <li><a href="#" onclick="showAllPosts()">Bài viết</a></li>
+                    <li><a href="#" onclick="showStats()">Thống kê</a></li>
                 </ul>
             </nav>
             
             <div class="search-container">
-                <input type="text" class="search-box" placeholder="Tìm kiếm bài viết, cổ phiếu...">
-                <button class="search-btn">Tìm</button>
+                <input type="text" class="search-box" id="searchInput" placeholder="Tìm kiếm bài viết..." onkeyup="searchPosts()" oninput="searchPosts()">
+                <button class="search-btn" onclick="searchPosts()">Tìm</button>
             </div>
         </div>
     </header>
+
+    <!-- Firebase Setup Message -->
+    <div id="firebaseSetup" class="alert alert-info" style="margin: 2rem auto; max-width: 1400px; margin-left: 20px; margin-right: 20px;">
+        <strong>🔧 Cài đặt Firebase:</strong> 
+        Để sử dụng đầy đủ tính năng, bạn cần cấu hình Firebase. 
+        <button class="btn btn-primary" onclick="showFirebaseSetup()" style="margin-left: 1rem; padding: 0.3rem 0.8rem;">Hướng dẫn setup</button>
+        <button class="btn btn-secondary" onclick="useOfflineMode()" style="margin-left: 0.5rem; padding: 0.3rem 0.8rem;">Dùng offline</button>
+    </div>
 
     <!-- Main Container -->
     <div class="main-container">
@@ -799,14 +848,14 @@
             <div class="sidebar-section">
                 <h3 class="sidebar-title">📊 Danh mục</h3>
                 <ul class="sidebar-menu">
-                    <li><a href="#all" class="active">📝 Tất cả bài viết</a></li>
-                    <li><a href="#stocks">📈 Chứng khoán</a></li>
-                    <li><a href="#analysis">🔍 Phân tích kỹ thuật</a></li>
-                    <li><a href="#fundamental">📊 Phân tích cơ bản</a></li>
-                    <li><a href="#psychology">🧠 Tâm lý đầu tư</a></li>
-                    <li><a href="#portfolio">💼 Quản lý danh mục</a></li>
-                    <li><a href="#personal">🚀 Phát triển bản thân</a></li>
-                    <li><a href="#news">📰 Tin tức thị trường</a></li>
+                    <li><a onclick="showAllPosts()" class="active">📝 Tất cả bài viết</a></li>
+                    <li><a onclick="filterByCategory('chung-khoan')">📈 Chứng khoán</a></li>
+                    <li><a onclick="filterByCategory('phan-tich-ky-thuat')">🔍 Phân tích kỹ thuật</a></li>
+                    <li><a onclick="filterByCategory('phan-tich-co-ban')">📊 Phân tích cơ bản</a></li>
+                    <li><a onclick="filterByCategory('tam-ly-dau-tu')">🧠 Tâm lý đầu tư</a></li>
+                    <li><a onclick="filterByCategory('quan-ly-danh-muc')">💼 Quản lý danh mục</a></li>
+                    <li><a onclick="filterByCategory('phat-trien-ban-than')">🚀 Phát triển bản thân</a></li>
+                    <li><a onclick="filterByCategory('tin-tuc')">📰 Tin tức thị trường</a></li>
                 </ul>
             </div>
 
@@ -814,315 +863,853 @@
             <div class="sidebar-section">
                 <h3 class="sidebar-title">⚡ Thao tác nhanh</h3>
                 <ul class="sidebar-menu">
-                    <li><a href="#create">✍️ Viết bài mới</a></li>
-                    <li><a href="#draft">📝 Bài nháp</a></li>
-                    <li><a href="#scheduled">⏰ Bài đã lên lịch</a></li>
-                    <li><a href="#analytics">📈 Thống kê</a></li>
+                    <li><a onclick="togglePostForm()">✍️ Viết bài mới</a></li>
+                    <li><a onclick="showDrafts()">📝 Bài nháp (<span id="draftCount">0</span>)</a></li>
+                    <li><a onclick="showStats()">📈 Thống kê</a></li>
+                    <li><a onclick="exportData()">📤 Xuất dữ liệu</a></li>
                 </ul>
             </div>
 
             <!-- Archive -->
             <div class="sidebar-section">
                 <h3 class="sidebar-title">📅 Lưu trữ</h3>
-                <ul class="sidebar-menu">
-                    <li><a href="#">Tháng 7/2025 (12)</a></li>
-                    <li><a href="#">Tháng 6/2025 (8)</a></li>
-                    <li><a href="#">Tháng 5/2025 (15)</a></li>
-                    <li><a href="#">Tháng 4/2025 (6)</a></li>
+                <ul class="sidebar-menu" id="archiveMenu">
+                    <!-- Dynamic archive will be populated here -->
                 </ul>
             </div>
         </aside>
 
         <!-- Main Content -->
         <main class="main-content">
-            <div class="content-header">
-                <div>
-                    <h1 class="content-title">Dashboard - Quản lý Blog</h1>
-                    <div class="breadcrumb">Trang chủ / Dashboard / Quản lý bài viết</div>
+            <!-- Dashboard View -->
+            <div id="dashboardView">
+                <div class="content-header">
+                    <div>
+                        <h1 class="content-title">Dashboard - Quản lý Blog</h1>
+                        <div class="breadcrumb">Trang chủ / Dashboard / Quản lý bài viết</div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="togglePostForm()">✍️ Viết bài mới</button>
-                <button class="btn btn-success">📊 Import dữ liệu</button>
-                <button class="btn btn-secondary">🔄 Đồng bộ</button>
-                <button class="btn btn-secondary">⚙️ Cài đặt</button>
-            </div>
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="togglePostForm()">✍️ Viết bài mới</button>
+                    <button class="btn btn-success" onclick="showAllPosts()">📚 Xem tất cả bài viết</button>
+                    <button class="btn btn-secondary" onclick="showDrafts()">📝 Bài nháp</button>
+                    <button class="btn btn-secondary" onclick="showStats()">📊 Thống kê</button>
+                </div>
 
-            <!-- Post Creation Form -->
-            <div id="postForm" class="post-form">
-                <h3 style="margin-bottom: 1.5rem; color: #2a5298;">📝 Tạo bài viết mới</h3>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="postTitle">📌 Tiêu đề bài viết:</label>
-                        <input type="text" id="postTitle" placeholder="Nhập tiêu đề hấp dẫn...">
+                <!-- Alert Container -->
+                <div id="alertContainer"></div>
+
+                <!-- Post Creation Form -->
+                <div id="postForm" class="post-form">
+                    <h3 style="margin-bottom: 1.5rem; color: #2a5298;">📝 <span id="formTitle">Tạo bài viết mới</span></h3>
+                    
+                    <input type="hidden" id="editPostId" value="">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="postTitle">📌 Tiêu đề bài viết:</label>
+                            <input type="text" id="postTitle" placeholder="Nhập tiêu đề hấp dẫn..." required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="postCategory">🏷️ Danh mục:</label>
+                            <select id="postCategory" required>
+                                <option value="chung-khoan">📈 Chứng khoán</option>
+                                <option value="phan-tich-ky-thuat">🔍 Phân tích kỹ thuật</option>
+                                <option value="phan-tich-co-ban">📊 Phân tích cơ bản</option>
+                                <option value="tam-ly-dau-tu">🧠 Tâm lý đầu tư</option>
+                                <option value="quan-ly-danh-muc">💼 Quản lý danh mục</option>
+                                <option value="phat-trien-ban-than">🚀 Phát triển bản thân</option>
+                                <option value="tin-tuc">📰 Tin tức thị trường</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="postTags">🏷️ Tags (cách nhau bằng dấu phẩy):</label>
+                            <input type="text" id="postTags" placeholder="VD: VN-Index, phân tích, đầu tư dài hạn">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="postStatus">📋 Trạng thái:</label>
+                            <select id="postStatus">
+                                <option value="published">🌐 Xuất bản ngay</option>
+                                <option value="draft">📝 Lưu nháp</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="postCategory">🏷️ Danh mục:</label>
-                        <select id="postCategory">
-                            <option value="chung-khoan">📈 Chứng khoán</option>
-                            <option value="phan-tich-ky-thuat">🔍 Phân tích kỹ thuật</option>
-                            <option value="phan-tich-co-ban">📊 Phân tích cơ bản</option>
-                            <option value="tam-ly-dau-tu">🧠 Tâm lý đầu tư</option>
-                            <option value="quan-ly-danh-muc">💼 Quản lý danh mục</option>
-                            <option value="phat-trien-ban-than">🚀 Phát triển bản thân</option>
-                            <option value="tin-tuc">📰 Tin tức thị trường</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="postTags">🏷️ Tags (cách nhau bằng dấu phẩy):</label>
-                        <input type="text" id="postTags" placeholder="VD: VN-Index, phân tích, đầu tư dài hạn">
+                        <label for="postSummary">📋 Tóm tắt bài viết:</label>
+                        <textarea id="postSummary" placeholder="Viết tóm tắt ngắn gọn về nội dung bài viết (hiển thị trên thẻ preview)..." required></textarea>
                     </div>
                     
                     <div class="form-group">
-                        <label for="postStatus">📋 Trạng thái:</label>
-                        <select id="postStatus">
-                            <option value="published">🌐 Xuất bản ngay</option>
-                            <option value="draft">📝 Lưu nháp</option>
-                            <option value="scheduled">⏰ Lên lịch đăng</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="postSummary">📋 Tóm tắt bài viết:</label>
-                    <textarea id="postSummary" placeholder="Viết tóm tắt ngắn gọn về nội dung bài viết (hiển thị trên thẻ preview)..."></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="postContent">📝 Nội dung chi tiết:</label>
-                    <div class="editor-toolbar">
-                        <button class="editor-btn" onclick="insertFormat('**', '**')"><strong>B</strong></button>
-                        <button class="editor-btn" onclick="insertFormat('*', '*')"><em>I</em></button>
-                        <button class="editor-btn" onclick="insertFormat('`', '`')">Code</button>
-                        <button class="editor-btn" onclick="insertFormat('\n### ', '')">H3</button>
-                        <button class="editor-btn" onclick="insertFormat('\n- ', '')">List</button>
-                        <button class="editor-btn" onclick="insertFormat('[', '](url)')">Link</button>
-                    </div>
-                    <textarea id="postContent" style="height: 300px;" placeholder="Viết nội dung chi tiết bài viết... 
+                        <label for="postContent">📝 Nội dung chi tiết:</label>
+                        <div class="editor-toolbar">
+                            <button type="button" class="editor-btn" onclick="insertFormat('**', '**')"><strong>B</strong></button>
+                            <button type="button" class="editor-btn" onclick="insertFormat('*', '*')"><em>I</em></button>
+                            <button type="button" class="editor-btn" onclick="insertFormat('`', '`')">Code</button>
+                            <button type="button" class="editor-btn" onclick="insertFormat('\n### ', '')">H3</button>
+                            <button type="button" class="editor-btn" onclick="insertFormat('\n- ', '')">List</button>
+                            <button type="button" class="editor-btn" onclick="insertFormat('[', '](url)')">Link</button>
+                        </div>
+                        <textarea id="postContent" style="height: 300px;" placeholder="Viết nội dung chi tiết bài viết... 
 
 Gợi ý cấu trúc:
 ### 1. Giới thiệu vấn đề
 ### 2. Phân tích chi tiết  
 ### 3. Ví dụ thực tế
-### 4. Kết luận và khuyến nghị"></textarea>
+### 4. Kết luận và khuyến nghị" required></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" class="btn btn-primary" onclick="savePost()">
+                            <span id="saveButtonText">🚀 Đăng bài</span>
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="saveDraft()">💾 Lưu nháp</button>
+                        <button type="button" class="btn btn-secondary" onclick="cancelEdit()">❌ Hủy</button>
+                    </div>
                 </div>
-                
-                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-                    <button class="btn btn-primary" onclick="createPost()">🚀 Đăng bài</button>
-                    <button class="btn btn-secondary" onclick="saveDraft()">💾 Lưu nháp</button>
-                    <button class="btn btn-secondary" onclick="togglePostForm()">❌ Hủy</button>
+
+                <!-- Posts Display -->
+                <div id="postsSection">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h2 style="color: #2a5298;">📚 <span id="postsTitle">Bài viết gần đây</span></h2>
+                        <div id="loadingIndicator" class="loading" style="display: none;">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                    <div id="postsContainer" class="posts-grid">
+                        <!-- Posts will be loaded here -->
+                    </div>
+                    <div id="noPostsMessage" style="text-align: center; padding: 3rem; color: #666; display: none;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📝</div>
+                        <h3>Chưa có bài viết nào</h3>
+                        <p>Hãy bắt đầu viết bài đầu tiên của bạn!</p>
+                        <button class="btn btn-primary" onclick="togglePostForm()" style="margin-top: 1rem;">✍️ Viết bài mới</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Posts Display -->
-            <div id="postsSection">
-                <h2 style="margin-bottom: 1.5rem; color: #2a5298;">📚 Bài viết gần đây</h2>
-                <div id="postsContainer" class="posts-grid">
-                    <!-- Sample Posts -->
-                    <article class="post-card">
-                        <div class="post-image">📈</div>
-                        <div class="post-content">
-                            <span class="post-category">Chứng khoán</span>
-                            <h3 class="post-title">5 Nguyên tắc đầu tư chứng khoán cho người mới bắt đầu</h3>
-                            <div class="post-meta">
-                                <span>👤 Admin</span>
-                                <span>📅 31/07/2025</span>
-                                <span>💬 15 bình luận</span>
-                                <span>👁️ 1,234 lượt xem</span>
-                            </div>
-                            <p class="post-excerpt">
-                                Đầu tư chứng khoán không chỉ là may rủi mà cần có chiến lược rõ ràng. Hãy cùng tìm hiểu 5 nguyên tắc cơ bản giúp bạn đầu tư hiệu quả và an toàn trong thị trường...
-                            </p>
-                            <div class="post-actions">
-                                <a href="#" class="btn btn-primary">👁️ Xem</a>
-                                <a href="#" class="btn btn-secondary">✏️ Sửa</a>
-                                <a href="#" class="btn btn-secondary">📊 Thống kê</a>
-                            </div>
-                        </div>
-                    </article>
+            <!-- Post Detail View -->
+            <div id="postDetailView" class="post-detail">
+                <button class="btn btn-secondary" onclick="showDashboard()" style="margin-bottom: 2rem;">← Quay lại</button>
+                
+                <div class="post-detail-header">
+                    <div id="postDetailCategory" class="post-category"></div>
+                    <h1 id="postDetailTitle" class="post-detail-title"></h1>
+                    <div id="postDetailMeta" class="post-detail-meta"></div>
+                    <div id="postDetailTags" class="tags-container"></div>
+                </div>
+                
+                <div id="postDetailContent" class="post-detail-content"></div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #e9ecef;">
+                    <button class="btn btn-secondary" onclick="editPost(currentPostId)">✏️ Sửa bài</button>
+                    <button class="btn btn-danger" onclick="deletePost(currentPostId)">🗑️ Xóa bài</button>
+                    <button class="btn btn-primary" onclick="sharePost(currentPostId)">📤 Chia sẻ</button>
+                </div>
+            </div>
 
-                    <article class="post-card">
-                        <div class="post-image">🧠</div>
-                        <div class="post-content">
-                            <span class="post-category">Phát triển bản thân</span>
-                            <h3 class="post-title">Xây dựng mindset của một nhà đầu tư thành công</h3>
-                            <div class="post-meta">
-                                <span>👤 Admin</span>
-                                <span>📅 30/07/2025</span>
-                                <span>💬 8 bình luận</span>
-                                <span>👁️ 856 lượt xem</span>
-                            </div>
-                            <p class="post-excerpt">
-                                Tư duy đúng đắn là chìa khóa thành công trong đầu tư. Bài viết này sẽ chia sẻ cách xây dựng tư duy tích cực, kiên định và khoa học trước những biến động của thị trường...
-                            </p>
-                            <div class="post-actions">
-                                <a href="#" class="btn btn-primary">👁️ Xem</a>
-                                <a href="#" class="btn btn-secondary">✏️ Sửa</a>
-                                <a href="#" class="btn btn-secondary">📊 Thống kê</a>
-                            </div>
-                        </div>
-                    </article>
+            <!-- Stats View -->
+            <div id="statsView" style="display: none;">
+                <div class="content-header">
+                    <div>
+                        <h1 class="content-title">📊 Thống kê Blog</h1>
+                        <div class="breadcrumb">Trang chủ / Dashboard / Thống kê</div>
+                    </div>
+                </div>
+                
+                <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 2rem;">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalPostsCount">0</div>
+                        <div class="stat-label">Tổng bài viết</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="publishedPostsCount">0</div>
+                        <div class="stat-label">Đã xuất bản</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="draftPostsCount">0</div>
+                        <div class="stat-label">Bài nháp</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalViewsCount">0</div>
+                        <div class="stat-label">Lượt xem</div>
+                    </div>
+                </div>
+
+                <!-- Category Stats -->
+                <div class="widget">
+                    <h3 class="widget-title">📈 Thống kê theo danh mục</h3>
+                    <div id="categoryStats"></div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="widget" style="margin-top: 2rem;">
+                    <h3 class="widget-title">🔔 Hoạt động gần đây</h3>
+                    <div id="recentActivity"></div>
+                </div>
+            </div>
+
+            <!-- Firebase Setup View -->
+            <div id="firebaseSetupView" style="display: none;">
+                <div class="content-header">
+                    <div>
+                        <h1 class="content-title">🔧 Cài đặt Firebase</h1>
+                        <div class="breadcrumb">Trang chủ / Cài đặt / Firebase</div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>📋 Hướng dẫn cài đặt Firebase:</strong><br>
+                    1. Vào <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a><br>
+                    2. Tạo project mới hoặc chọn project có sẵn<br>
+                    3. Thêm web app và copy config<br>
+                    4. Paste config vào form bên dưới
+                </div>
+
+                <div class="form-group">
+                    <label for="firebaseConfig">🔧 Firebase Configuration (JSON):</label>
+                    <textarea id="firebaseConfig" style="height: 200px;" placeholder='Paste Firebase config JSON here:
+{
+  "apiKey": "your-api-key",
+  "authDomain": "your-project.firebaseapp.com",
+  "projectId": "your-project-id",
+  "storageBucket": "your-project.appspot.com",
+  "messagingSenderId": "123456789",
+  "appId": "your-app-id"
+}'></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-primary" onclick="setupFirebase()">💾 Lưu cấu hình</button>
+                    <button class="btn btn-secondary" onclick="showDashboard()">❌ Hủy</button>
                 </div>
             </div>
         </main>
 
         <!-- Right Sidebar -->
         <aside class="right-sidebar">
-            <!-- Market Data Widget -->
+            <!-- Quick Stats -->
             <div class="widget">
-                <h3 class="widget-title">📊 Thông tin thị trường</h3>
-                <div class="market-data">
-                    <div class="market-item">
-                        <div class="market-value">1,287.45</div>
-                        <div class="market-change">VN-Index (+0.85%)</div>
+                <h3 class="widget-title">📈 Thống kê nhanh</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" id="quickTotalPosts">0</div>
+                        <div class="stat-label">Tổng bài viết</div>
                     </div>
-                    <div class="market-item">
-                        <div class="market-value">134.72</div>
-                        <div class="market-change">HNX-Index (+0.42%)</div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="quickDrafts">0</div>
+                        <div class="stat-label">Bài nháp</div>
                     </div>
-                </div>
-                <div class="market-data">
-                    <div class="market-item">
-                        <div class="market-value">24,850</div>
-                        <div class="market-change">USD/VND</div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="quickThisMonth">0</div>
+                        <div class="stat-label">Tháng này</div>
                     </div>
-                    <div class="market-item">
-                        <div class="market-value">2,385</div>
-                        <div class="market-change">Gold (USD/oz)</div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="quickCategories">0</div>
+                        <div class="stat-label">Danh mục</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Quick Stats -->
+            <!-- Recent Posts -->
             <div class="widget">
-                <h3 class="widget-title">📈 Thống kê Blog</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-number">47</div>
-                        <div class="stat-label">Tổng bài viết</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">12,847</div>
-                        <div class="stat-label">Lượt xem</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">234</div>
-                        <div class="stat-label">Bình luận</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">891</div>
-                        <div class="stat-label">Followers</div>
-                    </div>
+                <h3 class="widget-title">📝 Bài viết gần đây</h3>
+                <div id="recentPostsList">
+                    <!-- Recent posts will be populated here -->
                 </div>
             </div>
 
             <!-- Popular Tags -->
             <div class="widget">
                 <h3 class="widget-title">🏷️ Tags phổ biến</h3>
-                <div class="tags-cloud">
-                    <a href="#" class="tag">VN-Index</a>
-                    <a href="#" class="tag">Phân tích</a>
-                    <a href="#" class="tag">Đầu tư dài hạn</a>
-                    <a href="#" class="tag">Cổ phiếu ngân hàng</a>
-                    <a href="#" class="tag">Tâm lý thị trường</a>
-                    <a href="#" class="tag">P/E ratio</a>
-                    <a href="#" class="tag">Swing trading</a>
-                    <a href="#" class="tag">Risk management</a>
-                    <a href="#" class="tag">Portfolio</a>
-                    <a href="#" class="tag">Mindset</a>
+                <div id="popularTags" class="tags-container">
+                    <!-- Popular tags will be populated here -->
                 </div>
             </div>
 
-            <!-- Recent Activity -->
+            <!-- Quick Tools -->
             <div class="widget">
-                <h3 class="widget-title">🔔 Hoạt động gần đây</h3>
-                <div class="activity-item">
-                    <div class="activity-icon">💬</div>
-                    <div class="activity-content">
-                        <div class="activity-title">3 bình luận mới</div>
-                        <div class="activity-time">5 phút trước</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-icon">👁️</div>
-                    <div class="activity-content">
-                        <div class="activity-title">Bài viết được xem 156 lần</div>
-                        <div class="activity-time">15 phút trước</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-icon">📝</div>
-                    <div class="activity-content">
-                        <div class="activity-title">Bài viết mới được đăng</div>
-                        <div class="activity-time">2 giờ trước</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-icon">⭐</div>
-                    <div class="activity-content">
-                        <div class="activity-title">5 lượt thích mới</div>
-                        <div class="activity-time">3 giờ trước</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Social Links -->
-            <div class="widget">
-                <h3 class="widget-title">🌐 Kết nối xã hội</h3>
+                <h3 class="widget-title">🛠️ Công cụ nhanh</h3>
                 <div style="display: flex; flex-direction: column; gap: 0.8rem;">
-                    <a href="#" class="btn btn-primary" style="text-align: center;">
-                        📘 Facebook Page (1.2k follows)
-                    </a>
-                    <a href="#" class="btn btn-success" style="text-align: center;">
-                        📹 YouTube Channel (890 subs)
-                    </a>
-                    <a href="#" class="btn btn-secondary" style="text-align: center;">
-                        💼 LinkedIn (567 connects)
-                    </a>
-                    <a href="#" class="btn btn-secondary" style="text-align: center;">
-                        📧 Newsletter (2.1k subscribers)
-                    </a>
+                    <button class="btn btn-primary" onclick="togglePostForm()" style="text-align: center;">
+                        ✍️ Viết bài nhanh
+                    </button>
+                    <button class="btn btn-success" onclick="exportData()" style="text-align: center;">
+                        📤 Xuất dữ liệu
+                    </button>
+                    <button class="btn btn-secondary" onclick="importData()" style="text-align: center;">
+                        📥 Nhập dữ liệu
+                    </button>
+                    <button class="btn btn-secondary" onclick="showFirebaseSetup()" style="text-align: center;">
+                        ⚙️ Cài đặt Firebase
+                    </button>
                 </div>
             </div>
 
-            <!-- Tools & Resources -->
+            <!-- Storage Info -->
             <div class="widget">
-                <h3 class="widget-title">🛠️ Công cụ hữu ích</h3>
-                <ul class="sidebar-menu">
-                    <li><a href="#">📊 Screener cổ phiếu</a></li>
-                    <li><a href="#">📈 Biểu đồ kỹ thuật</a></li>
-                    <li><a href="#">💰 Tính toán P/E, P/B</a></li>
-                    <li><a href="#">📝 Template phân tích</a></li>
-                    <li><a href="#">🎓 Khóa học online</a></li>
-                    <li><a href="#">📚 Sách khuyên đọc</a></li>
-                </ul>
+                <h3 class="widget-title">💾 Thông tin lưu trữ</h3>
+                <div id="storageInfo">
+                    <div style="margin-bottom: 0.5rem;">
+                        <strong>Chế độ:</strong> <span id="storageMode">Offline (LocalStorage)</span>
+                    </div>
+                    <div style="margin-bottom: 0.5rem;">
+                        <strong>Dung lượng:</strong> <span id="storageUsage">0 KB</span>
+                    </div>
+                    <div style="margin-bottom: 0.5rem;">
+                        <strong>Đồng bộ:</strong> <span id="syncStatus">❌ Offline</span>
+                    </div>
+                </div>
             </div>
         </aside>
     </div>
 
     <script>
-        // Store posts in memory
+        // Global variables
         let posts = [];
         let drafts = [];
+        let currentPostId = null;
+        let currentFilter = 'all';
+        let isFirebaseEnabled = false;
+        let db = null;
 
-        // Toggle post form visibility
+        // Firebase configuration placeholder
+        let firebaseConfig = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPosts();
+            updateStats();
+            updateStorageInfo();
+            
+            // Load from localStorage if available
+            const savedPosts = localStorage.getItem('wealthbuilder_posts');
+            const savedDrafts = localStorage.getItem('wealthbuilder_drafts');
+            
+            if (savedPosts) {
+                posts = JSON.parse(savedPosts);
+            }
+            if (savedDrafts) {
+                drafts = JSON.parse(savedDrafts);
+            }
+            
+            displayPosts();
+            updateStats();
+            updateRecentPosts();
+            updatePopularTags();
+            updateArchive();
+        });
+
+        // Firebase setup functions
+        function showFirebaseSetup() {
+            hideAllViews();
+            document.getElementById('firebaseSetupView').style.display = 'block';
+        }
+
+        function setupFirebase() {
+            const configText = document.getElementById('firebaseConfig').value.trim();
+            
+            if (!configText) {
+                showAlert('⚠️ Vui lòng nhập Firebase configuration!', 'error');
+                return;
+            }
+
+            try {
+                firebaseConfig = JSON.parse(configText);
+                
+                // Initialize Firebase
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                
+                isFirebaseEnabled = true;
+                localStorage.setItem('wealthbuilder_firebase_config', configText);
+                
+                showAlert('✅ Firebase đã được cài đặt thành công!', 'success');
+                updateStorageInfo();
+                
+                // Sync local data to Firebase
+                syncLocalToFirebase();
+                
+                // Hide Firebase setup alert
+                document.getElementById('firebaseSetup').style.display = 'none';
+                
+                showDashboard();
+                
+            } catch (error) {
+                showAlert('❌ Lỗi cấu hình Firebase: ' + error.message, 'error');
+            }
+        }
+
+        function useOfflineMode() {
+            document.getElementById('firebaseSetup').style.display = 'none';
+            showAlert('📱 Đang sử dụng chế độ offline. Dữ liệu sẽ lưu trong trình duyệt.', 'info');
+            updateStorageInfo();
+        }
+
+        // Data management functions
+        function saveToStorage() {
+            localStorage.setItem('wealthbuilder_posts', JSON.stringify(posts));
+            localStorage.setItem('wealthbuilder_drafts', JSON.stringify(drafts));
+            updateStorageInfo();
+        }
+
+        function syncLocalToFirebase() {
+            if (!isFirebaseEnabled || !db) return;
+
+            // Sync posts
+            posts.forEach(post => {
+                db.collection('posts').doc(post.id.toString()).set(post)
+                    .catch(error => console.error('Error syncing post:', error));
+            });
+
+            // Sync drafts
+            drafts.forEach(draft => {
+                db.collection('drafts').doc(draft.id.toString()).set(draft)
+                    .catch(error => console.error('Error syncing draft:', error));
+            });
+
+            showAlert('🔄 Đã đồng bộ dữ liệu lên Firebase!', 'success');
+        }
+
+        function loadFromFirebase() {
+            if (!isFirebaseEnabled || !db) return;
+
+            showLoading(true);
+
+            // Load posts from Firebase
+            db.collection('posts').orderBy('timestamp', 'desc').get()
+                .then(querySnapshot => {
+                    posts = [];
+                    querySnapshot.forEach(doc => {
+                        posts.push(doc.data());
+                    });
+                    
+                    // Load drafts
+                    return db.collection('drafts').orderBy('timestamp', 'desc').get();
+                })
+                .then(querySnapshot => {
+                    drafts = [];
+                    querySnapshot.forEach(doc => {
+                        drafts.push(doc.data());
+                    });
+                    
+                    displayPosts();
+                    updateStats();
+                    updateRecentPosts();
+                    updatePopularTags();
+                    showLoading(false);
+                    showAlert('✅ Đã tải dữ liệu từ Firebase!', 'success');
+                })
+                .catch(error => {
+                    console.error('Error loading from Firebase:', error);
+                    showAlert('❌ Lỗi tải dữ liệu từ Firebase: ' + error.message, 'error');
+                    showLoading(false);
+                });
+        }
+
+        // Post management functions
+        function savePost() {
+            const title = document.getElementById('postTitle').value.trim();
+            const category = document.getElementById('postCategory').value;
+            const tags = document.getElementById('postTags').value;
+            const status = document.getElementById('postStatus').value;
+            const summary = document.getElementById('postSummary').value.trim();
+            const content = document.getElementById('postContent').value.trim();
+            const editId = document.getElementById('editPostId').value;
+
+            if (!title || !summary || !content) {
+                showAlert('⚠️ Vui lòng điền đầy đủ thông tin bắt buộc!', 'error');
+                return;
+            }
+
+            const postData = {
+                id: editId || Date.now(),
+                title: title,
+                category: category,
+                tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+                status: status,
+                summary: summary,
+                content: content,
+                author: 'Admin',
+                date: new Date().toLocaleDateString('vi-VN'),
+                timestamp: Date.now(),
+                views: editId ? getPostById(editId)?.views || 0 : Math.floor(Math.random() * 100) + 10,
+                likes: editId ? getPostById(editId)?.likes || 0 : Math.floor(Math.random() * 20) + 1
+            };
+
+            if (editId) {
+                // Update existing post
+                const index = posts.findIndex(p => p.id == editId);
+                if (index !== -1) {
+                    posts[index] = postData;
+                    showAlert('✅ Bài viết đã được cập nhật!', 'success');
+                }
+            } else {
+                // Create new post
+                if (status === 'draft') {
+                    drafts.unshift(postData);
+                    showAlert('💾 Bài viết đã được lưu vào nháp!', 'success');
+                } else {
+                    posts.unshift(postData);
+                    showAlert('🚀 Bài viết đã được đăng thành công!', 'success');
+                }
+            }
+
+            // Save to Firebase if enabled
+            if (isFirebaseEnabled && db) {
+                const collection = status === 'draft' ? 'drafts' : 'posts';
+                db.collection(collection).doc(postData.id.toString()).set(postData)
+                    .catch(error => console.error('Error saving to Firebase:', error));
+            }
+
+            saveToStorage();
+            clearPostForm();
+            togglePostForm();
+            displayPosts();
+            updateStats();
+            updateRecentPosts();
+            updatePopularTags();
+            updateArchive();
+        }
+
+        function saveDraft() {
+            // Change status to draft and save
+            document.getElementById('postStatus').value = 'draft';
+            savePost();
+        }
+
+        function editPost(postId) {
+            const post = getPostById(postId) || getDraftById(postId);
+            if (!post) {
+                showAlert('❌ Không tìm thấy bài viết!', 'error');
+                return;
+            }
+
+            // Fill form with post data
+            document.getElementById('editPostId').value = post.id;
+            document.getElementById('postTitle').value = post.title;
+            document.getElementById('postCategory').value = post.category;
+            document.getElementById('postTags').value = post.tags.join(', ');
+            document.getElementById('postStatus').value = post.status;
+            document.getElementById('postSummary').value = post.summary;
+            document.getElementById('postContent').value = post.content;
+
+            // Update form title and button
+            document.getElementById('formTitle').textContent = 'Chỉnh sửa bài viết';
+            document.getElementById('saveButtonText').innerHTML = '💾 Cập nhật bài';
+
+            // Show form and switch to dashboard
+            showDashboard();
+            togglePostForm();
+        }
+
+        function deletePost(postId) {
+            if (!confirm('🗑️ Bạn có chắc chắn muốn xóa bài viết này không?')) {
+                return;
+            }
+
+            // Remove from posts array
+            posts = posts.filter(p => p.id != postId);
+            drafts = drafts.filter(d => d.id != postId);
+
+            // Delete from Firebase if enabled
+            if (isFirebaseEnabled && db) {
+                db.collection('posts').doc(postId.toString()).delete();
+                db.collection('drafts').doc(postId.toString()).delete();
+            }
+
+            saveToStorage();
+            showAlert('🗑️ Bài viết đã được xóa!', 'success');
+            
+            // Go back to dashboard
+            showDashboard();
+            displayPosts();
+            updateStats();
+            updateRecentPosts();
+            updatePopularTags();
+        }
+
+        function getPostById(id) {
+            return posts.find(p => p.id == id);
+        }
+
+        function getDraftById(id) {
+            return drafts.find(d => d.id == id);
+        }
+
+        // Display functions
+        function displayPosts() {
+            const container = document.getElementById('postsContainer');
+            const noPostsMsg = document.getElementById('noPostsMessage');
+            
+            let postsToShow = [];
+            
+            if (currentFilter === 'all') {
+                postsToShow = [...posts];
+            } else if (currentFilter === 'drafts') {
+                postsToShow = [...drafts];
+            } else {
+                postsToShow = posts.filter(post => post.category === currentFilter);
+            }
+
+            if (postsToShow.length === 0) {
+                container.innerHTML = '';
+                noPostsMsg.style.display = 'block';
+                return;
+            }
+
+            noPostsMsg.style.display = 'none';
+            
+            let postsHTML = '';
+            postsToShow.forEach(post => {
+                const categoryDisplay = getCategoryDisplay(post.category);
+                const categoryIcon = getCategoryIcon(post.category);
+                const statusBadge = post.status === 'draft' ? '<span style="background: #ffc107; color: #000; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.7rem; margin-left: 0.5rem;">Nháp</span>' : '';
+                
+                postsHTML += `
+                    <article class="post-card">
+                        <div class="post-image">${categoryIcon}</div>
+                        <div class="post-content">
+                            <span class="post-category">${categoryDisplay}${statusBadge}</span>
+                            <h3 class="post-title" onclick="viewPost(${post.id})">${post.title}</h3>
+                            <div class="post-meta">
+                                <span>👤 ${post.author}</span>
+                                <span>📅 ${post.date}</span>
+                                <span>👁️ ${post.views} lượt xem</span>
+                                <span>❤️ ${post.likes} likes</span>
+                            </div>
+                            <p class="post-excerpt">${post.summary}</p>
+                            ${post.tags.length > 0 ? `
+                                <div class="tags-container">
+                                    ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                                </div>
+                            ` : ''}
+                            <div class="post-actions">
+                                <button class="btn btn-primary" onclick="viewPost(${post.id})">👁️ Xem</button>
+                                <button class="btn btn-secondary" onclick="editPost(${post.id})">✏️ Sửa</button>
+                                <button class="btn btn-danger" onclick="deletePost(${post.id})">🗑️ Xóa</button>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            });
+            
+            container.innerHTML = postsHTML;
+        }
+
+        function viewPost(postId) {
+            const post = getPostById(postId) || getDraftById(postId);
+            if (!post) {
+                showAlert('❌ Không tìm thấy bài viết!', 'error');
+                return;
+            }
+
+            currentPostId = postId;
+
+            // Update view count
+            if (posts.find(p => p.id == postId)) {
+                post.views++;
+                saveToStorage();
+            }
+
+            // Populate post detail view
+            document.getElementById('postDetailCategory').textContent = getCategoryDisplay(post.category);
+            document.getElementById('postDetailTitle').textContent = post.title;
+            document.getElementById('postDetailMeta').innerHTML = `
+                👤 ${post.author} • 📅 ${post.date} • 👁️ ${post.views} lượt xem • ❤️ ${post.likes} likes
+            `;
+            
+            // Display tags
+            const tagsContainer = document.getElementById('postDetailTags');
+            if (post.tags.length > 0) {
+                tagsContainer.innerHTML = post.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+            } else {
+                tagsContainer.innerHTML = '';
+            }
+
+            // Convert markdown-like formatting to HTML
+            let content = post.content
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/### (.*?)(\n|$)/g, '<h3>$1</h3>')
+                .replace(/\n- (.*?)(\n|$)/g, '<li>$1</li>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>');
+            
+            // Wrap in paragraphs
+            content = '<p>' + content + '</p>';
+            
+            // Fix list items
+            content = content.replace(/(<li>.*?<\/li>)/g, '<ul>$1</ul>');
+            
+            document.getElementById('postDetailContent').innerHTML = content;
+
+            // Show post detail view
+            hideAllViews();
+            document.getElementById('postDetailView').style.display = 'block';
+        }
+
+        // Navigation functions
+        function showDashboard() {
+            hideAllViews();
+            document.getElementById('dashboardView').style.display = 'block';
+            updateActiveMenu('all');
+        }
+
+        function showAllPosts() {
+            currentFilter = 'all';
+            document.getElementById('postsTitle').textContent = 'Tất cả bài viết';
+            displayPosts();
+            updateActiveMenu('all');
+            showDashboard();
+        }
+
+        function showDrafts() {
+            currentFilter = 'drafts';
+            document.getElementById('postsTitle').textContent = 'Bài nháp';
+            displayPosts();
+            updateActiveMenu('drafts');
+            showDashboard();
+        }
+
+        function showStats() {
+            hideAllViews();
+            document.getElementById('statsView').style.display = 'block';
+            updateDetailedStats();
+        }
+
+        function filterByCategory(category) {
+            currentFilter = category;
+            document.getElementById('postsTitle').textContent = getCategoryDisplay(category);
+            displayPosts();
+            updateActiveMenu(category);
+            showDashboard();
+        }
+
+        function hideAllViews() {
+            document.getElementById('dashboardView').style.display = 'none';
+            document.getElementById('postDetailView').style.display = 'none';
+            document.getElementById('statsView').style.display = 'none';
+            document.getElementById('firebaseSetupView').style.display = 'none';
+        }
+
+        function updateActiveMenu(filter) {
+            // Remove active class from all menu items
+            document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+            
+            // Add active class to current filter
+            // This is a simplified version - you might want to be more specific
+        }
+
+        // Search function
+        function searchPosts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                displayPosts();
+                return;
+            }
+
+            const filteredPosts = posts.filter(post => 
+                post.title.toLowerCase().includes(searchTerm) ||
+                post.summary.toLowerCase().includes(searchTerm) ||
+                post.content.toLowerCase().includes(searchTerm) ||
+                post.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+            );
+
+            // Display filtered posts
+            const container = document.getElementById('postsContainer');
+            const noPostsMsg = document.getElementById('noPostsMessage');
+            
+            if (filteredPosts.length === 0) {
+                container.innerHTML = '';
+                noPostsMsg.innerHTML = `
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                    <h3>Không tìm thấy kết quả</h3>
+                    <p>Không có bài viết nào chứa từ khóa "<strong>${searchTerm}</strong>"</p>
+                `;
+                noPostsMsg.style.display = 'block';
+                return;
+            }
+
+            noPostsMsg.style.display = 'none';
+            
+            let postsHTML = '';
+            filteredPosts.forEach(post => {
+                const categoryDisplay = getCategoryDisplay(post.category);
+                const categoryIcon = getCategoryIcon(post.category);
+                
+                postsHTML += `
+                    <article class="post-card">
+                        <div class="post-image">${categoryIcon}</div>
+                        <div class="post-content">
+                            <span class="post-category">${categoryDisplay}</span>
+                            <h3 class="post-title" onclick="viewPost(${post.id})">${post.title}</h3>
+                            <div class="post-meta">
+                                <span>👤 ${post.author}</span>
+                                <span>📅 ${post.date}</span>
+                                <span>👁️ ${post.views} lượt xem</span>
+                                <span>❤️ ${post.likes} likes</span>
+                            </div>
+                            <p class="post-excerpt">${post.summary}</p>
+                            ${post.tags.length > 0 ? `
+                                <div class="tags-container">
+                                    ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                                </div>
+                            ` : ''}
+                            <div class="post-actions">
+                                <button class="btn btn-primary" onclick="viewPost(${post.id})">👁️ Xem</button>
+                                <button class="btn btn-secondary" onclick="editPost(${post.id})">✏️ Sửa</button>
+                                <button class="btn btn-danger" onclick="deletePost(${post.id})">🗑️ Xóa</button>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            });
+            
+            container.innerHTML = postsHTML;
+            document.getElementById('postsTitle').textContent = `Kết quả tìm kiếm: "${searchTerm}" (${filteredPosts.length} bài)`;
+        }
+
+        // Form management
         function togglePostForm() {
             const form = document.getElementById('postForm');
             const isVisible = form.style.display === 'block';
-            form.style.display = isVisible ? 'none' : 'block';
-            if (!isVisible) {
+            
+            if (isVisible) {
+                form.style.display = 'none';
+            } else {
+                // Reset form for new post
+                clearPostForm();
+                document.getElementById('formTitle').textContent = 'Tạo bài viết mới';
+                document.getElementById('saveButtonText').innerHTML = '🚀 Đăng bài';
+                form.style.display = 'block';
                 document.getElementById('postTitle').focus();
             }
         }
 
-        // Insert formatting for rich text editor
+        function cancelEdit() {
+            clearPostForm();
+            togglePostForm();
+        }
+
+        function clearPostForm() {
+            document.getElementById('editPostId').value = '';
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postTags').value = '';
+            document.getElementById('postSummary').value = '';
+            document.getElementById('postContent').value = '';
+            document.getElementById('postStatus').value = 'published';
+        }
+
         function insertFormat(before, after) {
             const textarea = document.getElementById('postContent');
             const start = textarea.selectionStart;
@@ -1135,131 +1722,429 @@ Gợi ý cấu trúc:
             textarea.setSelectionRange(start + before.length, start + before.length + selectedText.length);
         }
 
-        // Create new post
-        function createPost() {
-            const title = document.getElementById('postTitle').value;
-            const category = document.getElementById('postCategory').value;
-            const tags = document.getElementById('postTags').value;
-            const status = document.getElementById('postStatus').value;
-            const summary = document.getElementById('postSummary').value;
-            const content = document.getElementById('postContent').value;
-
-            if (!title || !summary || !content) {
-                alert('⚠️ Vui lòng điền đầy đủ thông tin bắt buộc!');
-                return;
-            }
-
-            const newPost = {
-                id: Date.now(),
-                title: title,
-                category: category,
-                tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-                status: status,
-                summary: summary,
-                content: content,
-                author: 'Admin',
-                date: new Date().toLocaleDateString('vi-VN'),
-                views: Math.floor(Math.random() * 1000) + 100,
-                comments: Math.floor(Math.random() * 20) + 1,
-                likes: Math.floor(Math.random() * 50) + 5
-            };
-
-            if (status === 'draft') {
-                drafts.unshift(newPost);
-                alert('💾 Bài viết đã được lưu vào nháp!');
-            } else {
-                posts.unshift(newPost);
-                displayPosts();
-                alert('🚀 Bài viết đã được đăng thành công!');
-            }
-            
-            // Clear form
-            clearPostForm();
-            togglePostForm();
-            
-            // Update stats
-            updateStats();
-        }
-
-        // Save as draft
-        function saveDraft() {
-            const title = document.getElementById('postTitle').value;
-            const category = document.getElementById('postCategory').value;
-            const summary = document.getElementById('postSummary').value;
-            const content = document.getElementById('postContent').value;
-
-            if (!title && !summary && !content) {
-                alert('⚠️ Không có nội dung để lưu!');
-                return;
-            }
-
-            const draft = {
-                id: Date.now(),
-                title: title || 'Bài viết chưa có tiêu đề',
-                category: category,
-                summary: summary,
-                content: content,
-                date: new Date().toLocaleDateString('vi-VN'),
-                status: 'draft'
-            };
-
-            drafts.unshift(draft);
-            alert('💾 Đã lưu bài viết vào nháp!');
-            clearPostForm();
-        }
-
-        // Clear post form
-        function clearPostForm() {
-            document.getElementById('postTitle').value = '';
-            document.getElementById('postTags').value = '';
-            document.getElementById('postSummary').value = '';
-            document.getElementById('postContent').value = '';
-        }
-
-        // Display posts
-        function displayPosts() {
-            const container = document.getElementById('postsContainer');
-            let postsHTML = '';
-            
-            posts.forEach(post => {
-                const categoryDisplay = getCategoryDisplay(post.category);
-                const categoryIcon = getCategoryIcon(post.category);
-                postsHTML += `
-                    <article class="post-card">
-                        <div class="post-image">${categoryIcon}</div>
-                        <div class="post-content">
-                            <span class="post-category">${categoryDisplay}</span>
-                            <h3 class="post-title">${post.title}</h3>
-                            <div class="post-meta">
-                                <span>👤 ${post.author}</span>
-                                <span>📅 ${post.date}</span>
-                                <span>💬 ${post.comments} bình luận</span>
-                                <span>👁️ ${post.views} lượt xem</span>
-                            </div>
-                            <p class="post-excerpt">${post.summary}</p>
-                            ${post.tags.length > 0 ? `
-                                <div style="margin: 1rem 0;">
-                                    ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join(' ')}
-                                </div>
-                            ` : ''}
-                            <div class="post-actions">
-                                <a href="#" class="btn btn-primary">👁️ Xem</a>
-                                <a href="#" class="btn btn-secondary">✏️ Sửa</a>
-                                <a href="#" class="btn btn-secondary">📊 Thống kê</a>
-                            </div>
-                        </div>
-                    </article>
-                `;
-            });
-            
-            // Keep existing sample posts and add new ones
-            const existingSamples = container.innerHTML;
-            container.innerHTML = postsHTML + existingSamples;
-        }
-
-        // Get category display name
+        // Utility functions
         function getCategoryDisplay(category) {
             const categories = {
                 'chung-khoan': 'Chứng khoán',
                 'phan-tich-ky-thuat': 'Phân tích kỹ thuật',
                 'phan-tich-co-ban': 'Phân tích cơ bản',
+                'tam-ly-dau-tu': 'Tâm lý đầu tư',
+                'quan-ly-danh-muc': 'Quản lý danh mục',
+                'phat-trien-ban-than': 'Phát triển bản thân',
+                'tin-tuc': 'Tin tức thị trường'
+            };
+            return categories[category] || category;
+        }
+
+        function getCategoryIcon(category) {
+            const icons = {
+                'chung-khoan': '📈',
+                'phan-tich-ky-thuat': '🔍',
+                'phan-tich-co-ban': '📊',
+                'tam-ly-dau-tu': '🧠',
+                'quan-ly-danh-muc': '💼',
+                'phat-trien-ban-than': '🚀',
+                'tin-tuc': '📰'
+            };
+            return icons[category] || '📝';
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertClass = `alert-${type}`;
+            
+            const alertHTML = `
+                <div class="alert ${alertClass}" style="animation: fadeInUp 0.3s ease;">
+                    ${message}
+                    <button onclick="this.parentElement.remove()" style="float: right; background: none; border: none; font-size: 1.2rem; cursor: pointer;">×</button>
+                </div>
+            `;
+            
+            alertContainer.innerHTML = alertHTML;
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                const alert = alertContainer.querySelector('.alert');
+                if (alert) alert.remove();
+            }, 5000);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+        }
+
+        // Stats functions
+        function updateStats() {
+            const totalPosts = posts.length;
+            const totalDrafts = drafts.length;
+            const thisMonth = posts.filter(p => {
+                const postDate = new Date(p.timestamp);
+                const now = new Date();
+                return postDate.getMonth() === now.getMonth() && postDate.getFullYear() === now.getFullYear();
+            }).length;
+            
+            // Update quick stats
+            document.getElementById('quickTotalPosts').textContent = totalPosts;
+            document.getElementById('quickDrafts').textContent = totalDrafts;
+            document.getElementById('quickThisMonth').textContent = thisMonth;
+            document.getElementById('quickCategories').textContent = getUniqueCategories().length;
+            
+            // Update draft count in sidebar
+            document.getElementById('draftCount').textContent = totalDrafts;
+        }
+
+        function updateDetailedStats() {
+            const totalPosts = posts.length;
+            const publishedPosts = posts.filter(p => p.status === 'published').length;
+            const draftPosts = drafts.length;
+            const totalViews = posts.reduce((sum, p) => sum + (p.views || 0), 0);
+            
+            document.getElementById('totalPostsCount').textContent = totalPosts;
+            document.getElementById('publishedPostsCount').textContent = publishedPosts;
+            document.getElementById('draftPostsCount').textContent = draftPosts;
+            document.getElementById('totalViewsCount').textContent = totalViews.toLocaleString();
+            
+            // Category stats
+            updateCategoryStats();
+            updateRecentActivity();
+        }
+
+        function updateCategoryStats() {
+            const categoryCount = {};
+            posts.forEach(post => {
+                categoryCount[post.category] = (categoryCount[post.category] || 0) + 1;
+            });
+            
+            const statsContainer = document.getElementById('categoryStats');
+            let statsHTML = '';
+            
+            Object.entries(categoryCount).forEach(([category, count]) => {
+                const categoryName = getCategoryDisplay(category);
+                const icon = getCategoryIcon(category);
+                const percentage = ((count / posts.length) * 100).toFixed(1);
+                
+                statsHTML += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0.5rem; background: #f8f9fa; border-radius: 5px;">
+                        <span>${icon} ${categoryName}</span>
+                        <span><strong>${count}</strong> bài (${percentage}%)</span>
+                    </div>
+                `;
+            });
+            
+            statsContainer.innerHTML = statsHTML || '<p>Chưa có dữ liệu</p>';
+        }
+
+        function updateRecentActivity() {
+            const activities = [];
+            
+            // Add recent posts
+            posts.slice(0, 5).forEach(post => {
+                activities.push({
+                    icon: '📝',
+                    title: `Đăng bài: ${post.title}`,
+                    time: getTimeAgo(post.timestamp)
+                });
+            });
+            
+            // Add recent drafts
+            drafts.slice(0, 3).forEach(draft => {
+                activities.push({
+                    icon: '💾',
+                    title: `Lưu nháp: ${draft.title}`,
+                    time: getTimeAgo(draft.timestamp)
+                });
+            });
+            
+            // Sort by timestamp
+            activities.sort((a, b) => b.timestamp - a.timestamp);
+            
+            const container = document.getElementById('recentActivity');
+            let activityHTML = '';
+            
+            activities.slice(0, 10).forEach(activity => {
+                activityHTML += `
+                    <div style="display: flex; align-items: center; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid #e9ecef;">
+                        <div style="width: 40px; height: 40px; background: #2a5298; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                            ${activity.icon}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; margin-bottom: 0.2rem;">${activity.title}</div>
+                            <div style="font-size: 0.8rem; color: #666;">${activity.time}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = activityHTML || '<p>Chưa có hoạt động nào</p>';
+        }
+
+        function getTimeAgo(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'Vừa xong';
+            if (minutes < 60) return `${minutes} phút trước`;
+            if (hours < 24) return `${hours} giờ trước`;
+            return `${days} ngày trước`;
+        }
+
+        function updateRecentPosts() {
+            const container = document.getElementById('recentPostsList');
+            const recentPosts = posts.slice(0, 5);
+            
+            if (recentPosts.length === 0) {
+                container.innerHTML = '<p style="color: #666;">Chưa có bài viết nào</p>';
+                return;
+            }
+            
+            let postsHTML = '';
+            recentPosts.forEach(post => {
+                postsHTML += `
+                    <div style="padding: 0.8rem 0; border-bottom: 1px solid #e9ecef; cursor: pointer;" onclick="viewPost(${post.id})">
+                        <div style="font-weight: 600; margin-bottom: 0.3rem; color: #2a5298;">${post.title}</div>
+                        <div style="font-size: 0.8rem; color: #666;">${post.date} • ${post.views} lượt xem</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = postsHTML;
+        }
+
+        function updatePopularTags() {
+            const tagCount = {};
+            posts.forEach(post => {
+                post.tags.forEach(tag => {
+                    tagCount[tag] = (tagCount[tag] || 0) + 1;
+                });
+            });
+            
+            const sortedTags = Object.entries(tagCount)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 15);
+            
+            const container = document.getElementById('popularTags');
+            
+            if (sortedTags.length === 0) {
+                container.innerHTML = '<p style="color: #666;">Chưa có tags nào</p>';
+                return;
+            }
+            
+            let tagsHTML = '';
+            sortedTags.forEach(([tag, count]) => {
+                tagsHTML += `<span class="tag" onclick="searchByTag('${tag}')">${tag} (${count})</span>`;
+            });
+            
+            container.innerHTML = tagsHTML;
+        }
+
+        function updateArchive() {
+            const monthCount = {};
+            posts.forEach(post => {
+                const date = new Date(post.timestamp);
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                const monthLabel = `Tháng ${date.getMonth() + 1}/${date.getFullYear()}`;
+                
+                if (!monthCount[monthKey]) {
+                    monthCount[monthKey] = { label: monthLabel, count: 0 };
+                }
+                monthCount[monthKey].count++;
+            });
+            
+            const container = document.getElementById('archiveMenu');
+            let archiveHTML = '';
+            
+            Object.entries(monthCount)
+                .sort(([a], [b]) => b.localeCompare(a))
+                .slice(0, 6)
+                .forEach(([key, data]) => {
+                    archiveHTML += `<li><a onclick="filterByMonth('${key}')">${data.label} (${data.count})</a></li>`;
+                });
+            
+            container.innerHTML = archiveHTML || '<li><a>Chưa có bài viết</a></li>';
+        }
+
+        function updateStorageInfo() {
+            const mode = isFirebaseEnabled ? 'Firebase (Online)' : 'Offline (LocalStorage)';
+            const usage = new Blob([JSON.stringify(posts) + JSON.stringify(drafts)]).size;
+            const usageKB = (usage / 1024).toFixed(2);
+            const syncStatus = isFirebaseEnabled ? '✅ Online' : '❌ Offline';
+            
+            document.getElementById('storageMode').textContent = mode;
+            document.getElementById('storageUsage').textContent = usageKB + ' KB';
+            document.getElementById('syncStatus').innerHTML = syncStatus;
+        }
+
+        function getUniqueCategories() {
+            return [...new Set(posts.map(p => p.category))];
+        }
+
+        function searchByTag(tag) {
+            document.getElementById('searchInput').value = tag;
+            searchPosts();
+        }
+
+        function filterByMonth(monthKey) {
+            const [year, month] = monthKey.split('-');
+            const filteredPosts = posts.filter(post => {
+                const postDate = new Date(post.timestamp);
+                return postDate.getFullYear() == year && (postDate.getMonth() + 1) == parseInt(month);
+            });
+            
+            // Display filtered posts (similar to search)
+            const container = document.getElementById('postsContainer');
+            // Implementation similar to searchPosts but for month filter
+            document.getElementById('postsTitle').textContent = `Bài viết tháng ${month}/${year}`;
+        }
+
+        // Mobile menu functions
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('mobileSidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            const isActive = sidebar.classList.contains('active');
+            
+            if (isActive) {
+                sidebar.classList.remove('active');
+                overlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            } else {
+                sidebar.classList.add('active');
+                overlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // Data export/import functions
+        function exportData() {
+            const data = {
+                posts: posts,
+                drafts: drafts,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `wealthbuilder-backup-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showAlert('📤 Dữ liệu đã được xuất thành công!', 'success');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        
+                        if (data.posts && Array.isArray(data.posts)) {
+                            posts = [...posts, ...data.posts];
+                        }
+                        
+                        if (data.drafts && Array.isArray(data.drafts)) {
+                            drafts = [...drafts, ...data.drafts];
+                        }
+                        
+                        saveToStorage();
+                        displayPosts();
+                        updateStats();
+                        updateRecentPosts();
+                        updatePopularTags();
+                        
+                        showAlert('📥 Dữ liệu đã được nhập thành công!', 'success');
+                        
+                    } catch (error) {
+                        showAlert('❌ Lỗi đọc file: ' + error.message, 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function sharePost(postId) {
+            const post = getPostById(postId);
+            if (!post) return;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: post.title,
+                    text: post.summary,
+                    url: window.location.href + '#post-' + postId
+                }).catch(console.error);
+            } else {
+                // Fallback: copy to clipboard
+                const shareText = `${post.title}\n\n${post.summary}\n\n${window.location.href}#post-${postId}`;
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showAlert('📋 Link đã được copy vào clipboard!', 'success');
+                }).catch(() => {
+                    showAlert('❌ Không thể copy link', 'error');
+                });
+            }
+        }
+
+        // Load posts function (placeholder for future API integration)
+        function loadPosts() {
+            // Check if Firebase config exists in localStorage
+            const savedConfig = localStorage.getItem('wealthbuilder_firebase_config');
+            if (savedConfig) {
+                try {
+                    firebaseConfig = JSON.parse(savedConfig);
+                    firebase.initializeApp(firebaseConfig);
+                    db = firebase.firestore();
+                    isFirebaseEnabled = true;
+                    document.getElementById('firebaseSetup').style.display = 'none';
+                    loadFromFirebase();
+                } catch (error) {
+                    console.error('Firebase initialization failed:', error);
+                }
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + N: New post
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                togglePostForm();
+            }
+            
+            // Ctrl/Cmd + S: Save post (when form is open)
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                const form = document.getElementById('postForm');
+                if (form.style.display === 'block') {
+                    e.preventDefault();
+                    savePost();
+                }
+            }
+            
+            // Escape: Close modals/forms
+            if (e.key === 'Escape') {
+                const form = document.getElementById('postForm');
+                if (form.style.display === 'block') {
+                    togglePostForm();
+                }
+                
+                const sidebar = document.getElementById('mobileSidebar');
+                if (sidebar.classList.contains('active')) {
+                    toggleMobileMenu();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
